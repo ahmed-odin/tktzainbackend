@@ -30,7 +30,7 @@ class Ticket extends Model
         'completed_at',
     ];
 
-    protected $with = ['creator', 'completer'];
+    protected $with = ['creator', 'completer', 'activities'];
 
     protected $appends = ['completed_by_name'];
 
@@ -53,9 +53,15 @@ class Ticket extends Model
         return $this->belongsTo(User::class, 'completed_by');
     }
 
+    public function activities()
+    {
+        return $this->hasMany(TicketActivity::class)->oldest();
+    }
+
     public function scopePending($query)
     {
-        return $query->where('status', 'Pending');
+        // Reopened/Replied tickets are active work too, so they belong in the pending list.
+        return $query->whereIn('status', ['Pending', 'Reopened', 'Replied']);
     }
 
     public function scopeComplete($query)

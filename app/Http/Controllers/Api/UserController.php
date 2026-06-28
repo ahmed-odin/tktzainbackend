@@ -74,7 +74,14 @@ class UserController extends Controller
             'phone' => 'nullable|string',
             'role' => 'in:super_admin,user,staff',
             'is_active' => 'boolean',
+            'password' => 'nullable|min:6',
         ]);
+
+        // Only change the password when a new one is supplied (the model's
+        // "hashed" cast hashes it automatically).
+        if (empty($validated['password'])) {
+            unset($validated['password']);
+        }
 
         $user->update($validated);
 
@@ -92,6 +99,13 @@ class UserController extends Controller
                 'success' => false,
                 'message' => 'Unauthorized',
             ], 403);
+        }
+
+        if ((int) $id === $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You cannot delete your own account',
+            ], 422);
         }
 
         $user = User::findOrFail($id);

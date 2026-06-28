@@ -23,8 +23,12 @@ Route::middleware(['api', AuthenticateApiToken::class])->group(function () {
         Route::get('/pending', [TicketController::class, 'pending']);
         Route::get('/completed', [TicketController::class, 'completed']);
         Route::get('/governorates', [TicketController::class, 'governorates']);
+        Route::get('/filter-users', [TicketController::class, 'filterUsers']);
         Route::post('/', [TicketController::class, 'store']);
+        Route::post('/bulk', [TicketController::class, 'bulkStore']);
         Route::put('/{id}', [TicketController::class, 'update']);
+        Route::delete('/{id}', [TicketController::class, 'destroy']);
         Route::post('/{id}/complete', [TicketController::class, 'markComplete']);
+        Route::post('/{id}/reply', [TicketController::class, 'reply']);
     });
 });
